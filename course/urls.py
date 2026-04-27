@@ -39,6 +39,8 @@ schema_view = get_schema_view(openapi.Info(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('mycourse/', include('course_app.urls')),      
+
+
 ]
 
 

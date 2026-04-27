@@ -5,7 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-7s#z9a9rma*9chdm1n%8yuml0)5^p8z^+&2sh)fu@@0c1$wbuk'
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -51,7 +51,8 @@ ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 # CORS sozlamalari
-CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
+CORS_ALLOWED_ORIGINS = ["https://course-system-react.onrender.com",]
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Allauth va Sites
 SITE_ID = 1 

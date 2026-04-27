@@ -156,3 +156,13 @@ class UserProfileView(APIView):
             user.set_password(request.data['password'])
         user.save()
         return Response({"detail": "Profil muvaffaqiyatli yangilandi!"})
+    
+
+class DashboardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({
+            "message": f"Welcome {request.user.username}",
+            "status": "active"
+        })

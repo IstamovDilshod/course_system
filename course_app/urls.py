@@ -6,6 +6,7 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import path
+from .views import DashboardView
 
 from .views import (
     CourseViewSet, RegisterView, EnrollView,
@@ -43,6 +44,7 @@ urlpatterns = [
     # Enrollment
     path('enroll/', EnrollView.as_view(), name='enroll'),
     path('my-courses/', MyCourseView.as_view(), name='my-courses'),
+    path('dashboard/', DashboardView.as_view(), name='dashboard'),
 
     # Courses + nested (lessons, reviews)
     path('', include(router.urls)),

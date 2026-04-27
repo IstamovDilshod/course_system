@@ -51,8 +51,12 @@ ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 # CORS sozlamalari
-CORS_ALLOWED_ORIGINS = ["https://course-system-react.onrender.com",]
+CORS_ALLOWED_ORIGINS = [
+    "https://course-system-react.onrender.com",
+    "http://localhost:5173", # Agar React lokalda ishlayotgan bo'lsa
+]
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 # Allauth va Sites
 SITE_ID = 1 
@@ -82,8 +86,9 @@ REST_FRAMEWORK = {
 # DJ Rest Auth JWT sozlamalari
 REST_AUTH = {
     'USE_JWT': True,
-    'JWT_AUTH_COOKIE': 'my-app-auth',
-    'JWT_AUTH_REFRESH_COOKIE': 'my-refresh-token',
+    'JWT_AUTH_COOKIE': 'course_system_access_token',
+    'JWT_AUTH_REFRESH_COOKIE': 'course_system_refresh_token',
+    'JWT_AUTH_HTTPONLY': True
 }
 
 SIMPLE_JWT = {

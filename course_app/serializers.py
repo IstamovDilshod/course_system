@@ -7,23 +7,23 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 User = get_user_model()
 
 
-# ── JWT Token (role + username qo'shilgan) ──────────────────────────────────
+# ── JWT ───────────────────────────────────────────────────────────────────────
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        token['role'] = user.role
-        token['username'] = user.username  # ✅ Frontend uchun
+        token['role']     = user.role
+        token['username'] = user.username
         return token
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
-# ── Register ─────────────────────────────────────────────────────────────────
+# ── Register ──────────────────────────────────────────────────────────────────
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model  = User
         fields = ['username', 'email', 'password', 'role']
 
     def create(self, validated_data):
@@ -35,20 +35,22 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-# ── Lesson ───────────────────────────────────────────────────────────────────
+# ── Lesson ────────────────────────────────────────────────────────────────────
 class LessonSerializer(serializers.ModelSerializer):
+    video_file = serializers.FileField(required=False, allow_null=True)  # ✅
+
     class Meta:
-        model = Lesson
-        fields = ['id', 'title', 'content', 'order', 'created_at']
+        model  = Lesson
+        fields = ['id', 'title', 'content', 'video_file', 'order', 'created_at']
         read_only_fields = ['created_at']
 
 
-# ── Review ───────────────────────────────────────────────────────────────────
+# ── Review ────────────────────────────────────────────────────────────────────
 class ReviewSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
 
     class Meta:
-        model = Review
+        model  = Review
         fields = ['id', 'username', 'rating', 'comment', 'created_at']
         read_only_fields = ['created_at']
 
@@ -58,19 +60,19 @@ class ReviewSerializer(serializers.ModelSerializer):
         return value
 
 
-# ── Course ───────────────────────────────────────────────────────────────────
+# ── Course ────────────────────────────────────────────────────────────────────
 class CourseSerializer(serializers.ModelSerializer):
-    lessons = LessonSerializer(many=True, read_only=True)
-    lessons_count = serializers.SerializerMethodField()
-    avg_rating = serializers.SerializerMethodField()
+    lessons         = LessonSerializer(many=True, read_only=True)
+    lessons_count   = serializers.SerializerMethodField()
+    avg_rating      = serializers.SerializerMethodField()
     instructor_name = serializers.CharField(source='instructor.username', read_only=True)
 
     class Meta:
-        model = Course
+        model  = Course
         fields = [
             'id', 'title', 'description', 'price',
             'instructor', 'instructor_name', 'created_at',
-            'lessons', 'lessons_count', 'avg_rating'
+            'lessons', 'lessons_count', 'avg_rating',
         ]
         read_only_fields = ['instructor', 'created_at']
 
@@ -79,16 +81,16 @@ class CourseSerializer(serializers.ModelSerializer):
 
     def get_avg_rating(self, obj):
         reviews = obj.reviews.all()
-        if not reviews:
+        if not reviews.exists():
             return None
         return round(sum(r.rating for r in reviews) / reviews.count(), 1)
 
 
-# ── Enrollment ───────────────────────────────────────────────────────────────
+# ── Enrollment ────────────────────────────────────────────────────────────────
 class EnrollmentSerializer(serializers.ModelSerializer):
     course_title = serializers.CharField(source='course.title', read_only=True)
 
     class Meta:
-        model = Enrollment
-        fields = ['id', 'course', 'course_title', 'enrolled_at']
-        read_only_fields = ['enrolled_at']
+        model  = Enrollment
+        fields = ['id', 'course', 'course_title', 'enrolled_at', 'payment_status']
+        read_only_fields = ['enrolled_at', 'payment_status']

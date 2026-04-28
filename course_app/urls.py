@@ -7,7 +7,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import path
 from .views import DashboardView
-from django.urls import re_path
+from django.urls import path
 from django.views.generic import TemplateView
 
 from .views import (

@@ -7,6 +7,8 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import path
 from .views import DashboardView
+from django.urls import re_path
+from django.views.generic import TemplateView
 
 from .views import (
     CourseViewSet, RegisterView, EnrollView,
@@ -51,4 +53,10 @@ urlpatterns = [
     path('', include(course_router.urls)),
 
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0)),
+
+
+       # boshqa API routelar
+    # path('api/...')
+
+    re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
 ]

@@ -35,6 +35,8 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path(r'^.*$', TemplateView.as_view(template_name='index.html')),
+
     # Auth
     path('login/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
@@ -58,5 +60,5 @@ urlpatterns = [
        # boshqa API routelar
     # path('api/...')
 
-    re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
+  
 ]

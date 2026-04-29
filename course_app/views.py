@@ -3,13 +3,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
-
-import course
 from .filters import CourseFilter, ReviewFilter
-from .pagination import StandardPagination                  # ✅ qo'shildi
-from django.shortcuts import get_object_or_404
+from .pagination import StandardPagination
 
 from .models import Course, Enrollment, Lesson, Review
 from .serializers import (
@@ -32,7 +31,8 @@ class RegisterView(generics.CreateAPIView):
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all().order_by('-created_at')
     serializer_class = CourseSerializer
-    pagination_class = StandardPagination                   # ✅ ulandi
+    pagination_class = StandardPagination
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = CourseFilter
@@ -62,6 +62,8 @@ class CourseViewSet(viewsets.ModelViewSet):
 # ── Lesson ────────────────────────────────────────────────────────────────────
 class LessonViewSet(viewsets.ModelViewSet):
     serializer_class = LessonSerializer
+    # ✅ multipart/form-data qabul qilish uchun
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_queryset(self):
         return Lesson.objects.filter(course_id=self.kwargs.get('course_pk'))
@@ -78,7 +80,8 @@ class LessonViewSet(viewsets.ModelViewSet):
         serializer.save(course=course)
 
     def perform_update(self, serializer):
-        if self.request.user != self.get_object().course.instructor:
+        lesson = self.get_object()
+        if self.request.user != lesson.course.instructor:
             raise PermissionDenied("Faqat kurs egasi darsni tahrirlay oladi!")
         serializer.save()
 
@@ -104,10 +107,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
             return [permissions.AllowAny()]
-        return [permissions.IsAuthenticated(),IsInstructor()]
+        return [permissions.IsAuthenticated()]
 
     def perform_create(self, serializer):
-        course = Course.objects.get(id=self.kwargs.get('course_pk'))
+        course = get_object_or_404(Course, id=self.kwargs.get('course_pk'))
         if Review.objects.filter(user=self.request.user, course=course).exists():
             raise PermissionDenied("Siz bu kursga allaqachon baho bergansiz!")
         serializer.save(user=self.request.user, course=course)
@@ -156,13 +159,3 @@ class UserProfileView(APIView):
             user.set_password(request.data['password'])
         user.save()
         return Response({"detail": "Profil muvaffaqiyatli yangilandi!"})
-    
-
-class DashboardView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        return Response({
-            "message": f"Welcome {request.user.username}",
-            "status": "active"
-        })

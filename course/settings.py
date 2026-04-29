@@ -14,19 +14,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',  # Allauth uchun shart
-    
+    'django.contrib.sites',
+
     'course_app',
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
     'dj_rest_auth',
-    'dj_rest_auth.registration', # Bu qator qo'shildi
+    'dj_rest_auth.registration',
     'rest_framework_simplejwt.token_blacklist',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-
 
     'django_filters',
     'rest_framework_swagger',
@@ -34,37 +33,36 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware', # CORS eng tepada
-    'django.middleware.common.CommonMiddleware',
+    'corsheaders.middleware.CorsMiddleware',        # ← eng tepada
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'allauth.account.middleware.AccountMiddleware', # Allauth middleware
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-ACCOUNT_SIGNUP_FIELDS = ['username', 'email', 'password1', 'password2']
 
-# 2. Login usullarini aniqlash
+# ── Allauth ───────────────────────────────────────────────────────────────────
+ACCOUNT_SIGNUP_FIELDS         = ['username', 'email', 'password1', 'password2']
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'none'
-# CORS sozlamalari
+ACCOUNT_EMAIL_REQUIRED        = True
+ACCOUNT_EMAIL_VERIFICATION    = 'none'
+
+# ── CORS ──────────────────────────────────────────────────────────────────────
 CORS_ALLOWED_ORIGINS = [
     "https://course-system-react.onrender.com",
-    "http://localhost:5173", # Agar React lokalda ishlayotgan bo'lsa
+    "http://localhost:5173",
 ]
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
-# Allauth va Sites
-SITE_ID = 1 
-
-# Auth model
+# ── Auth ──────────────────────────────────────────────────────────────────────
+SITE_ID         = 1
 AUTH_USER_MODEL = 'course_app.User'
 
-# REST Framework
+# ── REST Framework ────────────────────────────────────────────────────────────
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
@@ -73,7 +71,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
-
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.SearchFilter',
@@ -83,35 +80,31 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # ← bu yerda
-    },
-]
-
-# DJ Rest Auth JWT sozlamalari
+# ── DJ Rest Auth ──────────────────────────────────────────────────────────────
 REST_AUTH = {
     'USE_JWT': True,
-    'JWT_AUTH_COOKIE': 'course_system_access_token',
+    'JWT_AUTH_COOKIE':         'course_system_access_token',
     'JWT_AUTH_REFRESH_COOKIE': 'course_system_refresh_token',
-    'JWT_AUTH_HTTPONLY': True
+    'JWT_AUTH_HTTPONLY':       True,
 }
 
+# ── Simple JWT ────────────────────────────────────────────────────────────────
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True,
+    'ACCESS_TOKEN_LIFETIME':   timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME':  timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS':   True,
     'BLACKLIST_AFTER_ROTATION': True,
 }
 
-ROOT_URLCONF = 'course.urls'
+ROOT_URLCONF     = 'course.urls'
+WSGI_APPLICATION = 'course.wsgi.application'
 
-# Qolgan qismlar (Templates, Databases, Validators) o'zgarishsiz qoladi
+# ── Templates ─────────────────────────────────────────────────────────────────
+# ✅ Bitta TEMPLATES bloki — React index.html shu yerdan topiladi
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],  # templates/index.html
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -123,27 +116,30 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'course.wsgi.application'
-
+# ── Database ──────────────────────────────────────────────────────────────────
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME':   BASE_DIR / 'db.sqlite3',
     }
 }
 
+# ── Password validators ───────────────────────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
-    # {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# ── Localization ──────────────────────────────────────────────────────────────
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
-USE_I18N = True
-USE_TZ = True
+TIME_ZONE     = 'UTC'
+USE_I18N      = True
+USE_TZ        = True
 
-STATIC_URL = 'static/'
-MEDIA_URL = '/media/'
+# ── Static & Media ────────────────────────────────────────────────────────────
+STATIC_URL  = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'   # collectstatic uchun
+
+MEDIA_URL  = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

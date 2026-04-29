@@ -83,6 +83,13 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates'],  # ← bu yerda
+    },
+]
+
 # DJ Rest Auth JWT sozlamalari
 REST_AUTH = {
     'USE_JWT': True,
